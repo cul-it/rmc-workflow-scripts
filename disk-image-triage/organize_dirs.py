@@ -39,7 +39,7 @@ def main():
     for di in diskimgs:
         if not os.path.isfile(di.replace('E01', 'info')):
             sys.exit('Quitting: info file not found for {0}'.format(di))
-            # Nothing should be created in output if we're missing a pair
+            # Nothing should be created in output if we're missing E01/info pair
             # NOTE: Does it matter if there is an info file without an E01?
     del(di)
 
@@ -49,10 +49,13 @@ def main():
         newdir = os.path.join(args.outputdir, pre_newdir)
         os.makedirs(newdir)
 
-        diskfile = os.path.join(newdir, os.path.basename(di))
-        infofile = os.path.join(newdir, os.path.basename(di.replace('E01', 'info')))
+        # Get every E{01..n} file
+        all_di = glob(di.replace('.E01', '.E0*'))
+        for adi in all_di:
+            diskfile = os.path.join(newdir, os.path.basename(adi))
+            copyfile(di, os.path.join(newdir, diskfile)) # Copy only
 
-        copyfile(di, os.path.join(newdir, diskfile)) # Copy only
+        infofile = os.path.join(newdir, os.path.basename(di.replace('E01', 'info')))
         copyfile(di.replace('E01', 'info'), os.path.join(newdir, infofile)) # Copy only
 
 if __name__ == "__main__":
