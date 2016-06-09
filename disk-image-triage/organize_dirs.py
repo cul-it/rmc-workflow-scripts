@@ -45,7 +45,7 @@ def main():
 
     for di in diskimgs:
         pre_newdir = os.path.basename(di).replace('.E01','')
-        pre_newdir = (re.sub('(ZD|DVD|CD|FD)(\d+)', r'\g<1>'+'-'+r'\g<2>', pre_newdir))
+        pre_newdir = (re.sub('(ZD|HD|DVD|CD|FD)(\d+)', r'\g<1>'+'-'+r'\g<2>', pre_newdir))
         newdir = os.path.join(args.outputdir, pre_newdir)
         os.makedirs(newdir)
 
