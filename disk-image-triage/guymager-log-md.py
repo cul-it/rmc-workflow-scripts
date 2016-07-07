@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # Originally from revision of GuymagerLogParser
 # https://github.com/euanc/GuymagerLogParser/commit/2aab1e4ddf87a5b759e834414e7b3e4e99addcfa
