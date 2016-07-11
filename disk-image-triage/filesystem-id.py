@@ -60,11 +60,12 @@ def main():
     # TODO DO THIS
 
     # Get list of dirs
-    dirlist = glob.glob('{0}/*'.format(args.inputdir,))
+    dirlist = glob.glob(os.path.join(args.inputdir,'*',))
+
 
 # TEST EWFEXPORT WITH E01/E02 files
     for dl in dirlist:
-        ewf_files = glob.glob('{0}/*.E*'.format(dl))
+        ewf_files = glob.glob(os.path.join(dl, '*.E*'))
         basename = os.path.basename(os.path.splitext(ewf_files[0])[0])
         command = 'ewfexport -u -t {0} {1}'.format(basename, ' '.join(ewf_files))
         print(command)
