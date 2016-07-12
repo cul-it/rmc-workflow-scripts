@@ -3,43 +3,71 @@
 import glob
 import os
 import sys
+import re
 import xml.etree.ElementTree as ET
+from collections import defaultdict
 
-namespaces = {'DFXML' : 'http://www.forensicswiki.org/wiki/Category:Digital_Forensics_XML'}
+namespaces = {'dfxml' : 'http://www.forensicswiki.org/wiki/Category:Digital_Forensics_XML',
+              'marc' : 'http://www.loc.gov/MARC21/slim'}
 
-conf = {}
 
 # NOTE TEMPORARY
 inputdir = '/Users/dianne/Desktop/GoldsenMD'
-inputoffset = 4
-
-# May need to adjust in production
-goldsen_files = glob.glob(os.path.join(inputdir, 'RMM', 'RMM*', 'PAFDAO', 'WORKS', '*'))
-
-for gf in goldsen_files:
-    fullpath = gf.split(os.sep)
-    rmm_num = fullpath[inputoffset+1]
-    conf[rmm_num] = {}
-
-    bibid = os.path.basename(gf)
-    conf[rmm_num][bibid] = {}
-
-    # TODO: START HERE ...
-    mx = glob.glob(os.path.join(gf, '*_marcxml.xml'))
-    if len(mx) != 1:
-        print(gf,mx)
-        sys.exit('Unexpected number of marcxml files. Quitting.')
-    marcxml = ET.parse(mx[0]).getroot()
-    print(marcxml.getchildren())
+inputoffset = 5
 
 
-    for di in glob.glob(os.path.join(gf, 'disk_images', '*_dfxml.xml')):
-        pre_disk_image = os.path.basename(di).split('_')
-        dfxml = ET.parse(di).getroot()
-        vols = dfxml.findall('DFXML:volume', namespaces)
-        for v in vols:
-            filesystems = v.findall('DFXML:ftype_str', namespaces)
-            for fs in filesystems:
-                pass
-#                print(fs.text)
+def parse_md():
+    conf = defaultdict(dict)
 
+    # Adjust in production
+    goldsen_files = glob.glob(os.path.join(inputdir, 'RMM', 'RMM*', 'PAFDAO', 'WORKS', '*'))
+
+    for gf in goldsen_files:
+        fullpath = gf.split(os.sep)
+        rmm_num = fullpath[inputoffset+1]
+        bibid = os.path.basename(gf)
+
+        mx = glob.glob(os.path.join(gf, '*_marcxml.xml'))
+        if len(mx) != 1:
+            print(gf,"Missing MARCXML") # TEMPORARY WORKAROUND
+            continue # TEMPORARY WORKAROUND
+    #        sys.exit('Unexpected number of marcxml files. Quitting.') 
+    # This should actually happen
+
+        marcxml = ET.parse(mx[0]).getroot()
+        record = marcxml.getchildren()[0]
+        datafields = record.findall('marc:datafield', namespaces)
+        sysreqs = []
+        for df in datafields:
+            if df.get('tag') == '538':
+                df_children = df.getchildren()
+                for dfc in df_children:
+                    sysreqs.append(dfc.text)
+
+        for di in glob.glob(os.path.join(gf, 'disk_images', '*_dfxml.xml')):
+            pre_disk_image = os.path.basename(di).split('_')
+            disk_image_id = '{0}_{1}'.format(bibid, pre_disk_image[1])
+            dfxml = ET.parse(di).getroot()
+            vols = dfxml.findall('dfxml:volume', namespaces)
+            for v in vols:
+                filesystems = []
+                pre_filesystems = v.findall('dfxml:ftype_str', namespaces)
+                for fs in pre_filesystems:
+                    filesystems.append(fs.text)
+
+            # Set up conf
+            conf[disk_image_id] = {}
+            conf[disk_image_id]['RMM'] = rmm_num
+            conf[disk_image_id]['sysreq'] = dfc
+            conf[disk_image_id]['filesystems'] = filesystems
+            # TODO: Actual disk image filename
+            # TODO: Title from MARC Record
+            
+
+    return conf
+
+def main():
+    print(parse_md())
+
+if __name__ == "__main__":
+    main()
