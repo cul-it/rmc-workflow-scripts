@@ -58,7 +58,7 @@ def parse_md():
             # Set up conf
             conf[disk_image_id] = {}
             conf[disk_image_id]['RMM'] = rmm_num
-            conf[disk_image_id]['sysreq'] = dfc
+            conf[disk_image_id]['sysreq'] = sysreqs
             conf[disk_image_id]['filesystems'] = filesystems
             # TODO: Actual disk image filename
             # TODO: Title from MARC Record
@@ -67,7 +67,8 @@ def parse_md():
     return conf
 
 def main():
-    print(parse_md())
+    goldsenconf = parse_md()
+    print(goldsenconf)
 
 if __name__ == "__main__":
     main()
