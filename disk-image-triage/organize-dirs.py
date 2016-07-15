@@ -44,19 +44,20 @@ def main():
     del(di)
 
     for di in diskimgs:
-        pre_newdir = os.path.basename(di).replace('.E01','')
-        pre_newdir = (re.sub('(ZD|HD|DVD|CD|FD)(\d+)', r'\g<1>'+'-'+r'\g<2>', pre_newdir))
+        filebase = os.path.splitext(os.path.basename(di))[0]
+        pre_newdir = (re.sub('(ZD|HD|DVD|CD|FD)(\d+)', r'\g<1>'+'-'+r'\g<2>', filebase))
         newdir = os.path.join(args.outputdir, pre_newdir)
         os.makedirs(newdir)
 
         # Get every E{01..n} file
-        all_di = glob(di.replace('.E01', '.E0*'))
+        all_di = glob(os.path.join(args.inputdir,'{0}.E*'.format(filebase)))
         for adi in all_di:
             diskfile = os.path.join(newdir, os.path.basename(adi))
-            copyfile(di, os.path.join(newdir, diskfile)) # Copy only
+            copyfile(adi, diskfile) # Copy only
 
-        infofile = os.path.join(newdir, os.path.basename(di.replace('E01', 'info')))
-        copyfile(di.replace('E01', 'info'), os.path.join(newdir, infofile)) # Copy only
+        oldinfofile = os.path.join(args.inputdir, '{0}.info'.format(filebase))
+        newinfofile = os.path.join(newdir, '{0}.info'.format(filebase))
+        copyfile(oldinfofile, newinfofile) # Copy only
 
 if __name__ == "__main__":
     main()
