@@ -4,8 +4,9 @@ import re
 import os
 import subprocess
 import sys
-import glob
 import argparse
+import csv
+from glob import glob
 
 # Input: Directory of directories of E01/info pairs (or triples, etc.)
 # Output: CSV file with ID, list of filesystems
@@ -14,16 +15,12 @@ import argparse
 #         Filesystems in json? in output directory? for easy parsing later?
 # Error: Input directory in wrong format
 #        EnCase disk image fails to extract
+#        Incorrect number of raw files found in directory (!= 1)
+#        Disktype fails on input
 #        ...?!
 
 fs_search = re.compile('(.*) file system')
 
-# TEMPORARY INPUT FOR TESTING
-pre_disktype_res = open('alldisktype.txt', 'rU').read().split('---')
-disktype_res_tmp = []
-for dr in pre_disktype_res[1:]:
-    dr = dr.strip()
-    disktype_res_tmp.append(dr)
 
 def parse_disktype(disktype_res):
     filesystems = []
@@ -34,9 +31,42 @@ def parse_disktype(disktype_res):
             filesystems.append(fs_try.group(1).strip())
     return filesystems
 
-def extract_raw(disk_img_dir):
-    # NEEDED: verified directory
-    pass
+def run_disktype(pathtoraw):
+    disktype_output = []
+    for rdir in pathtoraw:
+        rawfiles = glob(os.path.join(rdir, '*.raw'))
+        if len(rawfiles) != 1:
+            sys.exit("Unexpected number of raw files found.")
+        dtcommand = ['disktype', rawfiles[0]]
+        try:
+            dtout = subprocess.check_output(dtcommand)
+        except:
+            sys.exit("disktype failed with {0}".format(rawfiles[0]))
+        dtout = dtout.decode('utf-8')
+
+        fsondisk = parse_disktype(dtout)
+        disktype_output.append({'rmc_item_number' : os.path.basename(rdir), 'file_system_type' : '|'.join(fsondisk)})
+#        disktype_output[os.path.basename(rdir)] = fsondisk
+    return disktype_output
+
+def extract_raw(dirlist, startdir):
+    for dl in dirlist:
+        os.chdir(startdir)
+        ewf_files = glob(os.path.join(dl, '*.E*'))
+        ewf_files.sort()
+        ewf_files = [os.path.basename(eb) for eb in ewf_files]
+        basename = os.path.basename(os.path.splitext(ewf_files[0])[0])
+
+        os.chdir(dl)
+        command = 'ewfexport -u -t {0} {1}'.format(basename, ' '.join(ewf_files))
+        command = command.split(' ')
+        try:
+            subprocess.call(command)
+        except:
+            sys.exit("ewfexport error in {0}.".format(dl))
+
+
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -57,28 +87,28 @@ def main():
         sys.exit('Output file already exists; will not overwrite.')
 
     # Set up output file
-    # TODO DO THIS
+    outfile = open(args.outputfile, 'w')
+    fieldnames = ['rmc_item_number', 'file_system_type'] 
+    outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
+    outfilecsv.writeheader()
 
-    # Get list of dirs
-    dirlist = glob.glob(os.path.join(args.inputdir,'*',))
+    # Start making things happen
+    scriptloc = os.getcwd()
+
+    # Get list of dirs and run ewfexport for Exx files in each
+    disk_img_dir = glob(os.path.join(args.inputdir,'*',))
+#    extract_raw(disk_img_dir, scriptloc)
+
+    # Run disktype on all *.raw files
+    fsdict = run_disktype(disk_img_dir)
+
+    # Load into output CSV
+    for line in fsdict:
+        outfilecsv.writerow(line)
 
 
-# TEST EWFEXPORT WITH E01/E02 files
-    for dl in dirlist:
-        ewf_files = glob.glob(os.path.join(dl, '*.E*'))
-        basename = os.path.basename(os.path.splitext(ewf_files[0])[0])
-        command = 'ewfexport -u -t {0} {1}'.format(basename, ' '.join(ewf_files))
-        print(command)
-        
 
 
-#    # TEMPORARY TESTING LOOP
-#    for disktype_res_item in disktype_res_tmp:
-#        print(parse_disktype(disktype_res_item))
-#        print("end of this!\n\n")
-#
-#    # TODO: Write out CSV with key (from directory)
-#    # TODO: unpack the EnCase disk image
 
 if __name__ == "__main__":
     main()
