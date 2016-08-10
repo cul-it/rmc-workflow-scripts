@@ -16,6 +16,15 @@ inputdir = '/Users/dianne/Desktop/GoldsenMD'
 inputoffset = 5
 
 
+def scrub_marc(marc):
+    marc = marc.rstrip(',')
+    marc = marc.rstrip(' :')
+    marc = marc.rstrip(' /')
+    marc = marc.rstrip('.')
+    marc = marc.rstrip(',')
+    return marc
+
+
 def parse_md():
     conf = defaultdict(dict)
 
@@ -37,12 +46,38 @@ def parse_md():
         marcxml = ET.parse(mx[0]).getroot()
         record = marcxml.getchildren()[0]
         datafields = record.findall('marc:datafield', namespaces)
+
         sysreqs = []
+        title = None
+        creator = None
+        alt_creator = None
+
         for df in datafields:
             if df.get('tag') == '538':
                 df_children = df.getchildren()
                 for dfc in df_children:
                     sysreqs.append(dfc.text)
+            elif df.get('tag') == '245':
+                df_children = df.getchildren()
+                for dfc in df_children:
+                    if dfc.get('code') == 'a':
+                        title = scrub_marc(dfc.text)
+                    elif dfc.get('code') == 'c':
+                        creator = scrub_marc(dfc.text)
+            elif df.get('tag') == '100':
+                df_children = df.getchildren()
+                for dfc in df_children:
+                    if dfc.get('code') == 'a':
+                        alt_creator = scrub_marc(dfc.text)
+            elif df.get('tag') == '260':
+                df_children = df.getchildren()
+                for dfc in df_children:
+                    if dfc.get('code') == 'c':
+                        date = scrub_marc(dfc.text)
+                        date = date.lstrip('c')
+                        date = date.strip('?')
+                        date = date.strip('[')
+                        date = date.strip(']')
 
         for di in glob.glob(os.path.join(gf, 'disk_images', '*_dfxml.xml')):
             pre_disk_image = os.path.basename(di).split('_')
@@ -60,15 +95,26 @@ def parse_md():
             conf[disk_image_id]['RMM'] = rmm_num
             conf[disk_image_id]['sysreq'] = sysreqs
             conf[disk_image_id]['filesystems'] = filesystems
-            # TODO: Actual disk image filename
-            # TODO: Title from MARC Record
-            
+            conf[disk_image_id]['title'] = title
+            conf[disk_image_id]['date'] = date
+
+            if (creator is None) and (alt_creator is None):
+                conf[disk_image_id]['creator'] = ''
+            elif (alt_creator is not None) and (creator is None):
+                conf[disk_image_id]['creator'] = alt_creator
+            elif (creator is not None):
+                conf[disk_image_id]['creator'] = creator
+
+            # This will work when we have the whole CULAR shebang
+            conf[disk_image_id]['disk_img'] = glob.glob(os.path.join(gf, 'disk_images', '*.dd'))
 
     return conf
 
+def conf2tmpl(conf_entry):
+    pass
+
 def main():
     goldsenconf = parse_md()
-    print(goldsenconf)
 
 if __name__ == "__main__":
     main()
