@@ -51,6 +51,7 @@ def parse_md():
         title = None
         creator = None
         alt_creator = None
+        date = None
 
         for df in datafields:
             if df.get('tag') == '538':
@@ -111,10 +112,15 @@ def parse_md():
     return conf
 
 def conf2tmpl(conf_entry):
-    pass
+    # create empty directory for destination of templates
+    # First go through conf file and figure out what's needed to be created
+    for entry in conf_entry.keys():
+        print(entry)
+#    pass
 
 def main():
     goldsenconf = parse_md()
+    conf2tmpl(goldsenconf)
 
 if __name__ == "__main__":
     main()
