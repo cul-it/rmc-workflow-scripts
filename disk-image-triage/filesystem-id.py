@@ -13,11 +13,10 @@ from glob import glob
 #         Raw disk image if a.) multiple filesystems exist
 #                           b.) single filesystem unsupported by TSK
 #         Filesystems in json? in output directory? for easy parsing later?
-# Error: Input directory in wrong format
+# Error: Input directory in wrong format <-- NOTE: do I actually test for this?
 #        EnCase disk image fails to extract
 #        Incorrect number of raw files found in directory (!= 1)
 #        Disktype fails on input
-#        ...?!
 
 fs_search = re.compile('(.*) file system')
 
@@ -76,7 +75,7 @@ def main():
                         help='output file for CSV data')
     args = parser.parse_args()
 
-    # Does output dir exist?
+    # Does input dir exist?
     try:
         os.path.exists(args.inputdir)
     except:
@@ -97,7 +96,7 @@ def main():
 
     # Get list of dirs and run ewfexport for Exx files in each
     disk_img_dir = glob(os.path.join(args.inputdir,'*',))
-#    extract_raw(disk_img_dir, scriptloc)
+    extract_raw(disk_img_dir, scriptloc)
 
     # Run disktype on all *.raw files
     fsdict = run_disktype(disk_img_dir)
