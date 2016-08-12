@@ -30,6 +30,13 @@ def detect_beout(bedir):
         if os.stat(os.path.join(bedir, ats)).st_size > 0:
             accts[ats] = 1
 
+    # Aggregate into level 1 and level 2 - #NOTE: This part not yet tested
+    if (accts['ccn.txt'] == 1) or (accts['ccn_track2.txt'] == 1) or (accts['pii.txt'] == 1):
+        accts['level_1'] = 1
+
+    if (accts['alerts.txt'] == 1) or (accts['telephone.txt'] == 1):
+        accts['level_2'] = 1
+
     return accts
 
 def main():
@@ -53,7 +60,7 @@ def main():
     # Set up output file
     outfile = open(args.outputfile, 'w')
     fieldnames = ['rmc_item_number', 'alerts.txt', 'ccn_track2.txt',
-                  'ccn.txt', 'pii.txt', 'telephone.txt']
+                  'ccn.txt', 'pii.txt', 'telephone.txt', 'level_1', 'level_2']
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
     outfilecsv.writeheader()
 
