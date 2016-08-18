@@ -98,6 +98,9 @@ def main():
     disk_img_dir = glob(os.path.join(args.inputdir,'*',))
     extract_raw(disk_img_dir, scriptloc)
 
+    # Return to start point
+    os.chdir(scriptloc)
+
     # Run disktype on all *.raw files
     fsdict = run_disktype(disk_img_dir)
 
