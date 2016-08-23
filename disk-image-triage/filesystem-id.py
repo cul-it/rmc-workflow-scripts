@@ -49,6 +49,7 @@ def run_disktype(pathtoraw):
     return disktype_output
 
 def extract_raw(dirlist, startdir):
+    print(dirlist,startdir)
     for dl in dirlist:
         os.chdir(startdir)
         ewf_files = glob(os.path.join(dl, '*.E*'))
@@ -71,8 +72,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory with directories of E01/info pairs')
-    parser.add_argument('outputfile', metavar='[output_file]',
-                        help='output file for CSV data')
+#    parser.add_argument('outputfile', metavar='[output_file]',
+#                        help='output file for CSV data')
     args = parser.parse_args()
 
     # Does input dir exist?
@@ -82,11 +83,13 @@ def main():
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
-    if os.path.isfile(args.outputfile):
+    outputfile = os.path.join(args.inputdir, 'filesystem.csv')
+
+    if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
 
     # Set up output file
-    outfile = open(args.outputfile, 'w')
+    outfile = open(outputfile, 'w')
     fieldnames = ['rmc_item_number', 'file_system_type'] 
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
     outfilecsv.writeheader()
@@ -94,8 +97,13 @@ def main():
     # Start making things happen
     scriptloc = os.getcwd()
 
-    # Get list of dirs and run ewfexport for Exx files in each
+    # Get list of dirs
     disk_img_dir = glob(os.path.join(args.inputdir,'*',))
+
+    # Remove any csv files here
+    disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
+
+    # Run ewfexport for Exx files in dirs
     extract_raw(disk_img_dir, scriptloc)
 
     # Return to start point
