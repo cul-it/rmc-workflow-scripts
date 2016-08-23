@@ -17,8 +17,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory with E01/info files')
-    parser.add_argument('outputdir', metavar='[output_dir]',
-                        help='output directory (initially empty) for organized files')
+#    parser.add_argument('outputdir', metavar='[output_dir]',
+#                        help='output directory (initially empty) for organized files')
     args = parser.parse_args()
 
     try:
@@ -26,10 +26,12 @@ def main():
     except:
         sys.exit('Quitting: Input directory does not exist.')
 
+    outputdir = os.path.join(args.inputdir, 'organized')
+
     try:
-        dirtest = os.listdir(args.outputdir)
+        dirtest = os.listdir(outputdir)
     except:
-        sys.exit('Quitting: Output directory does not exist.')
+        os.makedirs(outputdir)
     else:
         if dirtest:
             sys.exit('Quitting: Output directory is not empty.')
@@ -46,7 +48,7 @@ def main():
     for di in diskimgs:
         filebase = os.path.splitext(os.path.basename(di))[0]
         pre_newdir = (re.sub('(ZD|HD|DVD|CD|FD)(\d+)', r'\g<1>'+'-'+r'\g<2>', filebase))
-        newdir = os.path.join(args.outputdir, pre_newdir)
+        newdir = os.path.join(outputdir, pre_newdir)
         os.makedirs(newdir)
 
         # Get every E{01..n} file
