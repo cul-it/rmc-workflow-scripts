@@ -43,8 +43,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory with directories of E01/info'+                             ' pairs and RAW extracted disk images')
-    parser.add_argument('outputfile', metavar='[output_file]',
-                        help='output file for CSV data')
+#    parser.add_argument('outputfile', metavar='[output_file]',
+#                        help='output file for CSV data')
     args = parser.parse_args()
 
     # Does input dir exist?
@@ -54,11 +54,13 @@ def main():
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
-    if os.path.isfile(args.outputfile):
+    outputfile = os.path.join(args.inputdir, 'level1.csv')
+
+    if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
 
     # Set up output file
-    outfile = open(args.outputfile, 'w')
+    outfile = open(outputfile, 'w')
     fieldnames = ['rmc_item_number', 'alerts.txt', 'ccn_track2.txt',
                   'ccn.txt', 'pii.txt', 'telephone.txt', 'level_1', 'level_2']
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
@@ -68,8 +70,11 @@ def main():
     # Get list of dirs first
     disk_img_dir = glob(os.path.join(args.inputdir, '*',))
 
+    # Remove csv from dir list
+    disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
+
     # Set up output file
-    outfile = ''
+    #outfile = '' # Not sure why that was there?
 
     # Starting dir
     startdir = os.getcwd()
@@ -85,6 +90,11 @@ def main():
         # Generate outputdir name
         beout = '{0}_BE'.format(os.path.basename(did))
 
+        # Does BE output already exist? If so, quit
+        if os.path.exists(os.path.join(did, beout)):
+            sys.exit('Quitting: has bulk_extractor already run?\n' +
+                     'Delete level1.csv and any _BE folders and try again')
+
         # Go to dir
         os.chdir(did)
 
@@ -94,6 +104,7 @@ def main():
 
         # Run the command
         spbeout = subprocess.check_output(becommand)
+
 
         # Get bulk_extractor results
         beres = detect_beout(beout)
