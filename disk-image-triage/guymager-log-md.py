@@ -37,7 +37,7 @@ def main():
 
     # Set up output file
     outfile = open(outputfile, 'w')
-    fieldnames = ['rmc_collection','rmc_item_number', 'technician', 'file_path','disk_image_format',
+    fieldnames = ['rmc_accession','rmc_item_number', 'technician', 'file_path','disk_image_format',
                   'ewf_disk_image_size','acquire_date', 'acquisition_time', 'ewf_md5_hash',
                   'number_sector_errors']
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
@@ -50,7 +50,7 @@ def main():
         for line in open(filename, 'rU'): 
 
             if line.strip().startswith('Case number'):
-                parsedline['rmc_collection'] = line[26:].strip()
+                parsedline['rmc_accession'] = line[26:].strip()
 
             if line.strip().startswith('Evidence number'):
                 parsedline['rmc_item_number'] = line[26:].strip()
