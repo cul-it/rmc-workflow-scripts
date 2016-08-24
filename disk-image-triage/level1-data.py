@@ -33,9 +33,13 @@ def detect_beout(bedir):
     # Aggregate into level 1 and level 2 - #NOTE: This part not yet tested
     if (accts['ccn.txt'] == 1) or (accts['ccn_track2.txt'] == 1) or (accts['pii.txt'] == 1):
         accts['level_1'] = 1
+    else:
+        accts['level_1'] = 0
 
     if (accts['alerts.txt'] == 1) or (accts['telephone.txt'] == 1):
         accts['level_2'] = 1
+    else:
+        accts['level_2'] = 0
 
     return accts
 
