@@ -38,7 +38,7 @@ def main():
     # Set up output file
     outfile = open(outputfile, 'w')
     fieldnames = ['rmc_accession','rmc_item_number', 'technician', 'file_path','disk_image_format',
-                  'ewf_disk_image_size','acquire_date', 'acquisition_time', 'ewf_md5_hash',
+                  'ewf_disk_image_size','acquire_date', 'acquisition_time', 'raw_md5_hash',
                   'number_sector_errors']
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
     outfilecsv.writeheader()
@@ -71,7 +71,7 @@ def main():
                 parsedline['acquisition_time'] = elapsedtotal
                 
             if line.strip().startswith('MD5 hash verified image'):
-                parsedline['ewf_md5_hash'] = line[28:].strip()
+                parsedline['raw_md5_hash'] = line[28:].strip()
                 
             if line.strip().startswith('Format'):
                 parsedline['disk_image_format'] = line[26:].strip()
