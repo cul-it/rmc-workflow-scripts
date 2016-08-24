@@ -20,22 +20,23 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory with .info files')
-    parser.add_argument('outputfile', metavar='[output_file]',
-                        help='output file for CSV data')
+#    parser.add_argument('outputfile', metavar='[output_file]',
+#                        help='output file for CSV data')
     args = parser.parse_args()
 
-    # Does output dir exist?
     try:
         os.path.exists(args.inputdir)
     except:
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
-    if os.path.isfile(args.outputfile):
+    outputfile = os.path.join(args.inputdir, 'image_info.csv')
+
+    if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
 
     # Set up output file
-    outfile = open(args.outputfile, 'w')
+    outfile = open(outputfile, 'w')
     fieldnames = ['rmc_collection','rmc_item_number', 'technician', 'file_path','disk_image_format',
                   'ewf_disk_image_size','acquire_date', 'acquisition_time', 'ewf_md5_hash',
                   'number_sector_errors']
