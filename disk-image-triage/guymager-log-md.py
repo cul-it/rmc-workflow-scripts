@@ -4,7 +4,7 @@
 # https://github.com/euanc/GuymagerLogParser/commit/2aab1e4ddf87a5b759e834414e7b3e4e99addcfa
 # Column headings changed to reflect RMC process
 
-# Input: Directory with .info files
+# Input: Directory of directories of E01/info pairs (or triples, etc.)
 # Output: CSV File with aggregated metadata from .info files
 # Error: output file already exists -- script will exit
 
@@ -19,7 +19,7 @@ from glob import glob
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
-                        help='input directory with .info files')
+                        help='input directory with directory of E01/info pairs')
 #    parser.add_argument('outputfile', metavar='[output_file]',
 #                        help='output file for CSV data')
     args = parser.parse_args()
@@ -43,7 +43,7 @@ def main():
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
     outfilecsv.writeheader()
 
-    files = glob(os.path.join(args.inputdir, '*.info'))
+    files = glob(os.path.join(args.inputdir, '*/*.info'))
 
     for filename in files:
         parsedline = {}
