@@ -46,19 +46,20 @@ def detect_beout(bedir):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
-                        help='input directory with directories of E01/info'+                             ' pairs and RAW extracted disk images')
+                        help='input directory with "organized" subdirectory'+
+                             ' that already contains RAW extracted disk images')
 #    parser.add_argument('outputfile', metavar='[output_file]',
 #                        help='output file for CSV data')
     args = parser.parse_args()
 
     # Does input dir exist?
     try:
-        os.path.exists(args.inputdir)
+        os.path.exists(os.path.join(args.inputdir, 'organized'))
     except:
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
-    outputfile = os.path.join(args.inputdir, 'level1.csv')
+    outputfile = os.path.join(args.inputdir, 'organized', 'level1.csv')
 
     if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
@@ -72,7 +73,7 @@ def main():
 
 
     # Get list of dirs first
-    disk_img_dir = glob(os.path.join(args.inputdir, '*',))
+    disk_img_dir = glob(os.path.join(args.inputdir, 'organized', '*',))
 
     # Remove csv from dir list
     disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]

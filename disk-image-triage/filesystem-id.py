@@ -71,19 +71,19 @@ def extract_raw(dirlist, startdir):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
-                        help='input directory with directories of E01/info pairs')
+                        help='input directory that contains "organized" subdirectory')
 #    parser.add_argument('outputfile', metavar='[output_file]',
 #                        help='output file for CSV data')
     args = parser.parse_args()
 
     # Does input dir exist?
     try:
-        os.path.exists(args.inputdir)
+        os.path.exists(os.path.join(args.inputdir, 'organized'))
     except:
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
-    outputfile = os.path.join(args.inputdir, 'filesystem.csv')
+    outputfile = os.path.join(args.inputdir, 'organized' ,'filesystem.csv')
 
     if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
@@ -98,7 +98,7 @@ def main():
     scriptloc = os.getcwd()
 
     # Get list of dirs
-    disk_img_dir = glob(os.path.join(args.inputdir,'*',))
+    disk_img_dir = glob(os.path.join(args.inputdir, 'organized', '*',))
 
     # Remove any csv files here
     disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
