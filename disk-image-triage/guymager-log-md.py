@@ -24,9 +24,7 @@ def main():
 #                        help='output file for CSV data')
     args = parser.parse_args()
 
-    try:
-        os.path.exists(os.path.join(args.inputdir, 'organized'))
-    except:
+    if not os.path.exists(os.path.join(args.inputdir, 'organized'))
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
