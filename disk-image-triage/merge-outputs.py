@@ -27,7 +27,7 @@ def main():
 
 
     # Does output file exist?
-    inputbase = os.path.normpath(args.inputdir).split(os.sep)[-1]
+    inputbase = os.path.abspath(os.path.normpath(args.inputdir)).split(os.sep)[-1]
     outputfile = os.path.join(args.inputdir, '{0}_stabilization.csv'.format(inputbase))
 
     if os.path.isfile(outputfile):
