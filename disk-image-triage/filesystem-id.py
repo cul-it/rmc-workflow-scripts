@@ -77,7 +77,7 @@ def main():
     args = parser.parse_args()
 
     # Does input dir exist?
-    if not os.path.exists(os.path.join(args.inputdir, 'organized'))
+    if not os.path.exists(os.path.join(args.inputdir, 'organized')):
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
