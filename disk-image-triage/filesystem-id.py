@@ -45,7 +45,6 @@ def run_disktype(pathtoraw):
 
         fsondisk = parse_disktype(dtout)
         disktype_output.append({'rmc_item_number' : os.path.basename(rdir), 'file_system_type' : '|'.join(fsondisk)})
-#        disktype_output[os.path.basename(rdir)] = fsondisk
     return disktype_output
 
 def extract_raw(dirlist, startdir):
