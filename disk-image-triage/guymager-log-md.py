@@ -36,7 +36,7 @@ def main():
     # Set up output file
     outfile = open(outputfile, 'w')
     fieldnames = ['rmc_accession','rmc_item_number', 'technician', 'file_path','disk_image_format',
-                  'ewf_disk_image_size','acquire_date', 'acquisition_time', 'raw_md5_hash',
+                  'acquire_date', 'acquisition_time', 'raw_md5_hash',
                   'number_sector_errors']
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
     outfilecsv.writeheader()
@@ -59,8 +59,8 @@ def main():
             if line.strip().startswith('Image path and file name'):
                 parsedline['file_path'] = line[26:].strip()
             
-            if line.strip().startswith('Device size'):
-                parsedline['ewf_disk_image_size'] = line[26:].split()[0]
+#            if line.strip().startswith('Device size'):
+#                parsedline['ewf_disk_image_size'] = line[26:].split()[0]
                 
             if line.strip().startswith('Ended'):
                 parsedline['acquire_date'] = line[22:41]
