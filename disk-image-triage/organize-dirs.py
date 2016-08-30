@@ -2,6 +2,7 @@
 
 # Input: Directory with E01/info file pairs
 # Output: Directory with one folder per each E01/info pair
+#         CSV File with total file size of Exx files
 # Error: Unpaired files; non-empty output directory -- script will exit
 
 # TODO: Modularize so it can be imported in another script?
@@ -10,6 +11,7 @@ import sys
 import os
 import argparse
 import re
+import csv
 from shutil import copyfile
 from glob import glob
 
@@ -36,6 +38,18 @@ def main():
         if dirtest:
             sys.exit('Quitting: Output directory is not empty.')
 
+    # Does output file exist?
+    outputfile = os.path.join(args.inputdir, 'organized', 'disk_img_size.csv')
+
+    if os.path.isfile(outputfile):
+        sys.exit('Output file already exists; will not overwrite.')
+
+    # Set up output file
+    outfile = open(outputfile, 'w')
+    fieldnames = ['rmc_item_number', 'exx_total_size']
+    outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
+    outfilecsv.writeheader()
+
     diskimgs = glob(os.path.join(args.inputdir, '*E01'))
 
     for di in diskimgs:
@@ -53,13 +67,21 @@ def main():
 
         # Get every E{01..n} file
         all_di = glob(os.path.join(args.inputdir,'{0}.E*'.format(filebase)))
+        total_size = 0
         for adi in all_di:
+            total_size = os.path.getsize(adi)+total_size
             diskfile = os.path.join(newdir, os.path.basename(adi))
             copyfile(adi, diskfile) # Copy only
 
         oldinfofile = os.path.join(args.inputdir, '{0}.info'.format(filebase))
         newinfofile = os.path.join(newdir, '{0}.info'.format(filebase))
         copyfile(oldinfofile, newinfofile) # Copy only
+
+        # Set up CSV line
+        diskimg_stat = {}
+        diskimg_stat['rmc_item_number'] = pre_newdir
+        diskimg_stat['exx_total_size'] = total_size
+        outfilecsv.writerow(diskimg_stat)
 
 if __name__ == "__main__":
     main()

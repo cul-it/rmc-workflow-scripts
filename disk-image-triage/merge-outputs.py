@@ -35,7 +35,7 @@ def main():
 
     # Ideally writing like this means if there are more intermediate steps
     # it is trivial to aggregate their data. One can only hope.
-    input_csvs = ['image_info.csv', 'filesystem.csv', 'level1.csv']
+    input_csvs = ['image_info.csv', 'filesystem.csv', 'level1.csv', 'disk_img_size.csv']
     aggregating_col = 'rmc_item_number'
 
     stabilization_dict = {}
