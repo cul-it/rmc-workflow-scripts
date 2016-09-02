@@ -18,7 +18,9 @@ namespaces = {'dfxml' : 'http://www.forensicswiki.org/wiki/Category:Digital_Fore
 inputdir = '/Users/dianne/Desktop/To Do/EmulationGoldsen/GoldsenMD'
 inputoffset = 5
 
-xml_tmpl = 'xml-templates' # TODO: Maybe a label for these...
+xml_tmpl = {'i386': 'xml-templates/qemu01.xml',
+            '68k' : 'xml-templates/basiliskii01.xml',
+            'ppc' : 'xml-templates/sheepshaver01.xml'}
 
 
 def scrub_marc(marc):
@@ -109,40 +111,55 @@ def parse_md():
             elif (creator is not None):
                 conf[disk_image_id]['creator'] = creator
 
-            # This will work when we have the whole CULAR shebang
-            conf[disk_image_id]['disk_img'] = glob.glob(os.path.join(gf, 'disk_images', '*.dd'))
+            # TODO: Fix this when you actually have actual disk images to glob in here
+            pre_diloc = glob.glob(os.path.join(gf, 'disk_images', '{0}.dd'.format(disk_image_id)))
+            conf[disk_image_id]['disk_img'] = pre_diloc
+
 
     return conf
 
-def conf2tmpl(conf_entry):
+def conf2tmpl(conf_entry, outpath):
     # create empty directory for destination of templates
     # First go through conf file and figure out what's needed to be created
     for entry in conf_entry.keys():
-        print(conf_entry)
         # Which templates do we need?
-#        print(conf_entry[entry]['filesystems'])
+        if 'ISO9660' in conf_entry[entry]['filesystems']:
+            tmpl = Template(open(xml_tmpl['i386']).read())
+            towrite = open(os.path.join(outpath, '{0}_i386.xml'.format(entry)), 'w')
+            tmpl = tmpl.substitute(BIBIDCDNO = entry,
+                                   MARCTITLE = conf_entry[entry]['title'],
+                                   EMUPATH = 'TEMPORARY://qemuFILE',
+                                   ARTPATH = conf_entry[entry]['disk_img'])
+            towrite.write(tmpl)
+            towrite.close()
 
+
+        if 'HFS' in conf_entry[entry]['filesystems']:
+            pass
+        
+        if 'HFS+' in conf_entry[entry]['filesystems']:
+            pass
 
 # TODO: name of file to create, and string that represents the file data
 
 def main():
 # NOT NEEDED YET
-#    parser = argparse.ArgumentParser()
-#    parser.add_argument('outputdir', metavar='[output_dir]',
-#                        help='output directory (initially empty) for XML configuration files')
-#    args = parser.parse_args()
-#
-#    try:
-#        dirtest = os.listdir(args.outputdir)
-#    except:
-#        os.makedirs(args.outputdir)
-#    else:
-#        if dirtest:
-#            sys.exit('Quitting: Output directory is not empty.')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('outputdir', metavar='[output_dir]',
+                        help='output directory (initially empty) for XML configuration files')
+    args = parser.parse_args()
+
+    try:
+        dirtest = os.listdir(args.outputdir)
+    except:
+        os.makedirs(args.outputdir)
+    else:
+        if dirtest:
+            sys.exit('Quitting: Output directory is not empty.')
 
 
     goldsenconf = parse_md()
-    conf2tmpl(goldsenconf)
+    conf2tmpl(goldsenconf, args.outputdir)
 
 if __name__ == "__main__":
     main()
