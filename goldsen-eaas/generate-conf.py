@@ -12,7 +12,7 @@ namespaces = {'dfxml' : 'http://www.forensicswiki.org/wiki/Category:Digital_Fore
 
 
 # NOTE TEMPORARY
-inputdir = '/Users/dianne/Desktop/GoldsenMD'
+inputdir = '/Users/dianne/Desktop/To Do/EmulationGoldsen/GoldsenMD'
 inputoffset = 5
 
 
@@ -39,9 +39,7 @@ def parse_md():
         mx = glob.glob(os.path.join(gf, '*_marcxml.xml'))
         if len(mx) != 1:
             print(gf,"Missing MARCXML") # TEMPORARY WORKAROUND
-            continue # TEMPORARY WORKAROUND
-    #        sys.exit('Unexpected number of marcxml files. Quitting.') 
-    # This should actually happen
+            sys.exit('Unexpected number of marcxml files. Quitting.') 
 
         marcxml = ET.parse(mx[0]).getroot()
         record = marcxml.getchildren()[0]
