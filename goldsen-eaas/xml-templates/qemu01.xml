@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <emulationEnvironment xmlns="http://bwfla.bwl.de/common/datatypes">
- <id>BIBIDCDNO</id>
+ <id>$BIBIDCDNO</id>
  <description>
-    <title>MARCTITLE</title>
+    <title>$MARCTITLE</title>
  </description>
  <arch>i386</arch>
  <emulator bean="Qemu"></emulator>
@@ -36,12 +36,12 @@
  </drive>
 
  <binding id="main_hdd">
-  <url>imagearchive:EMUPATH</url>
+  <url>imagearchive:$EMUPATH</url>
   <access>cow</access>
  </binding>
 
  <binding id="cd">
-  <url>imagearchive:ARTPATH.iso</url>
+  <url>imagearchive:$ARTPATH.iso</url>
   <access>cow</access>
  </binding>
 

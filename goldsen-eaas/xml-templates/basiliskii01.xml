@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <emulationEnvironment xmlns="http://bwfla.bwl.de/common/datatypes">
-    <id>BIBIDCDNO</id>
+    <id>$BIBIDCDNO</id>
     <description>
-        <title>MARCTITLE</title>
+        <title>$MARCTITLE</title>
     </description>
     <arch>m68k</arch>
     <emulator bean="BasiliskII"/>
@@ -24,7 +24,7 @@
         <plugged>false</plugged>
     </drive>
     <binding id="main_hdd">
-        <url>imagearchive:EMUPATH</url>
+        <url>imagearchive:$EMUPATH</url>
         <access>cow</access>
     </binding>
     <binding id="apple_roms">
@@ -32,7 +32,7 @@
         <access>cow</access>
     </binding>
     <binding id="cd">
-        <url>imagearchive:objects/ARTPATH.iso</url>
+        <url>imagearchive:objects/$ARTPATH.iso</url>
         <access>cow</access>
     </binding>
     <!-- Some values in nativeConfig may need changing -->
@@ -43,7 +43,7 @@
   serialb /dev/ttyS1[[nl]]
   udptunnel false[[nl]]
   udpport 6066[[nl]]
-  rom binding://apple_roms/ROM-PATH[[nl]]
+  rom binding://apple_roms/$ROM-PATH[[nl]]
   bootdrive 0[[nl]]
   bootdriver 0[[nl]]
   ramsize 16777216[[nl]]
