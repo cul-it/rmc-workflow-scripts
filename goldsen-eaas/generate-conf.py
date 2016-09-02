@@ -4,8 +4,11 @@ import glob
 import os
 import sys
 import re
+import argparse
+import os
 import xml.etree.ElementTree as ET
 from collections import defaultdict
+from string import Template
 
 namespaces = {'dfxml' : 'http://www.forensicswiki.org/wiki/Category:Digital_Forensics_XML',
               'marc' : 'http://www.loc.gov/MARC21/slim'}
@@ -14,6 +17,8 @@ namespaces = {'dfxml' : 'http://www.forensicswiki.org/wiki/Category:Digital_Fore
 # NOTE TEMPORARY
 inputdir = '/Users/dianne/Desktop/To Do/EmulationGoldsen/GoldsenMD'
 inputoffset = 5
+
+xml_tmpl = 'xml-templates' # TODO: Maybe a label for these...
 
 
 def scrub_marc(marc):
@@ -83,8 +88,8 @@ def parse_md():
             disk_image_id = '{0}_{1}'.format(bibid, pre_disk_image[1])
             dfxml = ET.parse(di).getroot()
             vols = dfxml.findall('dfxml:volume', namespaces)
+            filesystems = []
             for v in vols:
-                filesystems = []
                 pre_filesystems = v.findall('dfxml:ftype_str', namespaces)
                 for fs in pre_filesystems:
                     filesystems.append(fs.text)
@@ -113,10 +118,29 @@ def conf2tmpl(conf_entry):
     # create empty directory for destination of templates
     # First go through conf file and figure out what's needed to be created
     for entry in conf_entry.keys():
-        print(entry)
-#    pass
+        print(conf_entry)
+        # Which templates do we need?
+#        print(conf_entry[entry]['filesystems'])
+
+
+# TODO: name of file to create, and string that represents the file data
 
 def main():
+# NOT NEEDED YET
+#    parser = argparse.ArgumentParser()
+#    parser.add_argument('outputdir', metavar='[output_dir]',
+#                        help='output directory (initially empty) for XML configuration files')
+#    args = parser.parse_args()
+#
+#    try:
+#        dirtest = os.listdir(args.outputdir)
+#    except:
+#        os.makedirs(args.outputdir)
+#    else:
+#        if dirtest:
+#            sys.exit('Quitting: Output directory is not empty.')
+
+
     goldsenconf = parse_md()
     conf2tmpl(goldsenconf)
 
