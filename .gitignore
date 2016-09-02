@@ -2,3 +2,6 @@
 *.swp
 notready/*
 misc/*
+.DS_Store
+
+*.bak
