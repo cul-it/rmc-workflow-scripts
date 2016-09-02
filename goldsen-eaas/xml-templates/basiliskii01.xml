@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <emulationEnvironment xmlns="http://bwfla.bwl.de/common/datatypes">
-    <id>BIBID-CDNO-ID</id>
+    <id>BIBIDCDNO</id>
     <description>
-        <title>TITLE-FROM-MARC-RECORD</title>
+        <title>MARCTITLE</title>
     </description>
     <arch>m68k</arch>
     <emulator bean="BasiliskII"/>
@@ -24,7 +24,7 @@
         <plugged>false</plugged>
     </drive>
     <binding id="main_hdd">
-        <url>imagearchive:PATH-TO-EMULATED-ENVIRONMENT</url>
+        <url>imagearchive:EMUPATH</url>
         <access>cow</access>
     </binding>
     <binding id="apple_roms">
@@ -32,7 +32,7 @@
         <access>cow</access>
     </binding>
     <binding id="cd">
-        <url>imagearchive:objects/PATH-TO-ARTWORK.iso</url>
+        <url>imagearchive:objects/ARTPATH.iso</url>
         <access>cow</access>
     </binding>
     <!-- Some values in nativeConfig may need changing -->
