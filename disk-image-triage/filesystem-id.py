@@ -30,41 +30,48 @@ def parse_disktype(disktype_res):
             filesystems.append(fs_try.group(1).strip())
     return filesystems
 
-def run_disktype(pathtoraw):
-    disktype_output = []
-    for rdir in pathtoraw:
-        rawfiles = glob(os.path.join(rdir, '*.raw'))
-        if len(rawfiles) != 1:
-            sys.exit("Unexpected number of raw files found.")
-        dtcommand = ['disktype', rawfiles[0]]
-        try:
-            dtout = subprocess.check_output(dtcommand)
-        except:
-            sys.exit("disktype failed with {0}".format(rawfiles[0]))
-        dtout = dtout.decode('utf-8')
+def run_disktype(rdir):
+    disktype_output = {}
+    disktype_output['rmc_item_number'] = os.path.basename(rdir)
 
-        fsondisk = parse_disktype(dtout)
-        disktype_output.append({'rmc_item_number' : os.path.basename(rdir), 'file_system_type' : '|'.join(fsondisk)})
+    rawfiles = glob(os.path.join(rdir, '*.raw'))
+
+    if len(rawfiles) != 1:
+        sys.stderr.write("Wrong number of RAW files: {0}\n".format(rdir))
+        disktype_output['file_system_type'] = 'ERROR'
+        return disktype_output
+
+    dtcommand = ['disktype', rawfiles[0]]
+    try:
+        dtout = subprocess.check_output(dtcommand)
+    except:
+        sys.stderr.write("disktype failed: {0}\n".format(rawfiles[0]))
+        disktype_output['file_system_type'] = 'ERROR'
+        return disktype_output
+
+    dtout = dtout.decode('utf-8')
+    fsondisk = parse_disktype(dtout)
+
+    disktype_output['file_system_type']  = '|'.join(fsondisk)
     return disktype_output
 
-def extract_raw(dirlist, startdir):
-    print(dirlist,startdir)
-    for dl in dirlist:
-        os.chdir(startdir)
-        ewf_files = glob(os.path.join(dl, '*.E*'))
-        ewf_files.sort()
-        ewf_files = [os.path.basename(eb) for eb in ewf_files]
-        basename = os.path.basename(os.path.splitext(ewf_files[0])[0])
+def extract_raw(dl, startdir):
+    os.chdir(startdir)
+    ewf_files = glob(os.path.join(dl, '*.E*'))
+    ewf_files.sort()
+    ewf_files = [os.path.basename(eb) for eb in ewf_files]
+    basename = os.path.basename(os.path.splitext(ewf_files[0])[0])
 
-        os.chdir(dl)
-        command = 'ewfexport -u -t {0} {1}'.format(basename, ' '.join(ewf_files))
-        command = command.split(' ')
-        try:
-            subprocess.call(command)
-        except:
-            sys.exit("ewfexport error in {0}.".format(dl))
+    os.chdir(dl)
+    command = 'ewfexport -u -t {0} {1}'.format(basename, ' '.join(ewf_files))
+    command = command.split(' ')
 
+    try:
+        subprocess.call(command)
+    except:
+        sys.stderr.write("EWF extraction failed: {0}.\n".format(dl))
 
+    run_disktype(dl) # OH MAN I HOPE THIS ACTUALLY WORKS
 
 
 def main():
@@ -101,20 +108,11 @@ def main():
     disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
 
     # Run ewfexport for Exx files in dirs
-    extract_raw(disk_img_dir, scriptloc)
-
-    # Return to start point
-    os.chdir(scriptloc)
-
-    # Run disktype on all *.raw files
-    fsdict = run_disktype(disk_img_dir)
-
-    # Load into output CSV
-    for line in fsdict:
-        outfilecsv.writerow(line)
-
-
-
+    # Run disktype within raw extraction function
+    # Write out as loop proceeds
+    for did in disk_img_dir:
+        dtres = extract_raw(did, scriptloc)
+        outfilecsv.writerow(dtres)
 
 
 if __name__ == "__main__":
