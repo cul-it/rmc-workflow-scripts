@@ -12,7 +12,7 @@ import os
 import argparse
 import re
 import csv
-from shutil import copyfile
+from shutil import move
 from glob import glob
 
 def main():
@@ -71,11 +71,17 @@ def main():
         for adi in all_di:
             total_size = os.path.getsize(adi)+total_size
             diskfile = os.path.join(newdir, os.path.basename(adi))
-            copyfile(adi, diskfile) # Copy only
+            try:
+                move(adi, diskfile)
+            except:
+                sys.stderr.write('File not moved: {0}'.format(adi))
 
         oldinfofile = os.path.join(args.inputdir, '{0}.info'.format(filebase))
         newinfofile = os.path.join(newdir, '{0}.info'.format(filebase))
-        copyfile(oldinfofile, newinfofile) # Copy only
+        try:
+            move(oldinfofile, newinfofile)
+        except:
+            sys.stderr.write('File not moved: {0}'.format(oldinfofile))
 
         # Set up CSV line
         diskimg_stat = {}
