@@ -74,14 +74,14 @@ def main():
             try:
                 move(adi, diskfile)
             except:
-                sys.stderr.write('File not moved: {0}'.format(adi))
+                sys.stderr.write('File not moved: {0}\n'.format(adi))
 
         oldinfofile = os.path.join(args.inputdir, '{0}.info'.format(filebase))
         newinfofile = os.path.join(newdir, '{0}.info'.format(filebase))
         try:
             move(oldinfofile, newinfofile)
         except:
-            sys.stderr.write('File not moved: {0}'.format(oldinfofile))
+            sys.stderr.write('File not moved: {0}\n'.format(oldinfofile))
 
         # Set up CSV line
         diskimg_stat = {}
