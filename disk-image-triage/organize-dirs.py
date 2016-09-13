@@ -83,5 +83,7 @@ def main():
         diskimg_stat['exx_total_size'] = total_size
         outfilecsv.writerow(diskimg_stat)
 
+    outfile.close()
+
 if __name__ == "__main__":
     main()
