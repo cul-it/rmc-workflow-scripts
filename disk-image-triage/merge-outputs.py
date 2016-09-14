@@ -4,6 +4,7 @@ import csv
 import os
 import sys
 import argparse
+import uuid
 
 # Input: Directory of directories of E01/info pairs (or triples, etc.)
 # Output: Aggregated CSV file that combines outputs of previous steps
@@ -28,7 +29,7 @@ def main():
 
     # Does output file exist?
     inputbase = os.path.abspath(os.path.normpath(args.inputdir)).split(os.sep)[-1]
-    outputfile = os.path.join(args.inputdir, '{0}_stabilization.csv'.format(inputbase))
+    outputfile = os.path.join(args.inputdir, '{0}_stabilization_{1}.csv'.format(inputbase, uuid.uuid4()))
 
     if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
