@@ -71,7 +71,8 @@ def extract_raw(dl, startdir):
     except:
         sys.stderr.write("EWF extraction failed: {0}.\n".format(dl))
 
-    run_disktype(dl) # OH MAN I HOPE THIS ACTUALLY WORKS
+    dtout = run_disktype(dl) # OH MAN I HOPE THIS ACTUALLY WORKS
+    return dtout
 
 
 def main():
