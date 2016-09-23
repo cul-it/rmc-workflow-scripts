@@ -86,31 +86,37 @@ def main():
     for did in disk_img_dir:
         rawfiles = glob(os.path.join(did, "*.raw"))
         if len(rawfiles) != 1:
-            sys.exit('Unexpected number of RAW files in {0}'.format(did))
+            beres = {'alerts.txt': 'ERROR',
+                     'ccn_track2.txt': 'ERROR',
+                     'ccn.txt': 'ERROR',
+                     'pii.txt': 'ERROR',
+                     'telephone.txt': 'ERROR'
+                    }
+
         else:
             this_raw = os.path.basename(rawfiles[0])
 
-        # Generate outputdir name
-        beout = '{0}_BE'.format(os.path.basename(did))
+            # Generate outputdir name
+            beout = '{0}_BE'.format(os.path.basename(did))
 
-        # Does BE output already exist? If so, quit
-        if os.path.exists(os.path.join(did, beout)):
-            sys.exit('Quitting: has bulk_extractor already run?\n' +
-                     'Delete level1.csv and any _BE folders and try again')
+            # Does BE output already exist? If so, quit
+            if os.path.exists(os.path.join(did, beout)):
+                sys.exit('Quitting: has bulk_extractor already run?\n' +
+                         'Delete level1.csv and any _BE folders and try again')
 
-        # Go to dir
-        os.chdir(did)
+            # Go to dir
+            os.chdir(did)
 
-        # Set up bulk_extractor command with ONLY the accts scanner enabled
-        becommand = ['bulk_extractor', this_raw, 
-                     '-E', 'accts', '-o', beout]
+            # Set up bulk_extractor command with ONLY the accts scanner enabled
+            becommand = ['bulk_extractor', this_raw, 
+                         '-E', 'accts', '-o', beout]
 
-        # Run the command
-        spbeout = subprocess.check_output(becommand)
+            # Run the command
+            spbeout = subprocess.check_output(becommand)
 
 
-        # Get bulk_extractor results
-        beres = detect_beout(beout)
+            # Get bulk_extractor results
+            beres = detect_beout(beout)
 
         # Add RMC identifier and write to log
         beres['rmc_item_number'] = os.path.basename(did)
