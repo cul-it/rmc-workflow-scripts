@@ -49,8 +49,21 @@ def run_disktype(rdir):
         disktype_output['file_system_type'] = 'ERROR'
         return disktype_output
 
-    dtout = dtout.decode('utf-8')
-    fsondisk = parse_disktype(dtout)
+
+    # Fallback for some weird encoding issues
+    # Nested try/except isn't terribly pretty but oh well
+    try:
+        dtout = dtout.decode('utf-8')
+    except:
+        try:
+            dtout = dtout.decode('iso-8859-1')
+        except:
+            dtout = None 
+
+    if dtout is None:
+        fsondisk = ['ERROR']
+    else:
+        fsondisk = parse_disktype(dtout)
 
     disktype_output['file_system_type']  = '|'.join(fsondisk)
     return disktype_output
@@ -70,6 +83,7 @@ def extract_raw(dl, startdir):
         subprocess.call(command)
     except:
         sys.stderr.write("EWF extraction failed: {0}.\n".format(dl))
+
 
     dtout = run_disktype(dl) # OH MAN I HOPE THIS ACTUALLY WORKS
     return dtout
@@ -103,7 +117,7 @@ def main():
     scriptloc = os.getcwd()
 
     # Get list of dirs
-    disk_img_dir = glob(os.path.join(args.inputdir, 'organized', '*',))
+    disk_img_dir = glob(os.path.join(os.path.abspath(args.inputdir), 'organized', '*',))
 
     # Remove any csv files here
     disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
