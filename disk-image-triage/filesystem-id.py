@@ -83,7 +83,8 @@ def extract_raw(dl, startdir):
         subprocess.call(command)
     except:
         sys.stderr.write("EWF extraction failed: {0}.\n".format(dl))
-
+        dtout = ['ERROR']
+        return dtout
 
     dtout = run_disktype(dl) # OH MAN I HOPE THIS ACTUALLY WORKS
     return dtout
