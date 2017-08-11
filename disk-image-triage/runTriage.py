@@ -14,7 +14,7 @@ from shutil import move
 from glob import glob
 from hurry.filesize import size
 
-import organizeDirs
+from organizeDirs import organizeDirs
 import guymagerLogMD
 import filesystemID
 import level1Data
@@ -40,16 +40,16 @@ def main():
             input_size += os.path.getsize(fp)
     print("The size of the input directory is: {0}".format(size(input_size)))
     print("To continue, you need {0} of free space.".format(size(input_size*4)))
-    proceed = input("Do you want to continue? y/N ")
-    if proceed.lower != 'y':
+    proceed = str(input("Do you want to continue? y/N "))
+    if not proceed.startswith('y'):
         sys.exit("Quitting.")
 
     # Run all the individual triage scripts
-    organizeDirs.main(args.inputdir)
-    guymagerLogMD.main(args.inputdir)
-    filesystemID.main(args.inputdir)
-    level1Data.main(args.inputdir)
-    mergeOutputs.main(args.inputdir)
+    organizeDirs(args.inputdir)
+    guymagerLogMD(args.inputdir)
+    filesystemID(args.inputdir)
+    level1Data(args.inputdir)
+    mergeOutputs(args.inputdir)
 
 if __name__ == "__main__":
     main()
