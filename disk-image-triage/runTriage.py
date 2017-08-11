@@ -15,10 +15,10 @@ from glob import glob
 from hurry.filesize import size
 
 from organizeDirs import organizeDirs
-import guymagerLogMD
-import filesystemID
-import level1Data
-import mergeOutputs
+from guymagerLogMD import guymagerLogMD
+from filesystemID import filesystemID
+from level1Data import level1Data
+from mergeOutputs import mergeOutputs
 
 
 def main():
