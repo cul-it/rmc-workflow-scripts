@@ -27,9 +27,7 @@ def main():
                         help='input directory with E01/info files')
     args = parser.parse_args()
 
-    try:
-        os.path.exists(args.inputdir)
-    except:
+    if not os.path.exists(args.inputdir):
         sys.exit('Quitting: Input directory does not exist.')
 
     # Check for space; quit if not available
