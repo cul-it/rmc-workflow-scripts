@@ -19,10 +19,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory with E01/info files')
-#    parser.add_argument('outputdir', metavar='[output_dir]',
-#                        help='output directory (initially empty) for organized files')
-    args = parser.parse_args()
+    cmdargs = parser.parse_args()
+    organizeDirs(cmdargs)
 
+
+def organizeDirs(args):
     try:
         os.path.exists(args.inputdir)
     except:
