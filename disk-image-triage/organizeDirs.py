@@ -25,9 +25,7 @@ def main():
     organizeDirs(idir)
 
 def organizeDirs(inputdir):
-    try:
-        os.path.exists(inputdir)
-    except:
+    if not os.path.exists(inputdir):
         sys.exit('Quitting: Input directory does not exist.')
 
     outputdir = os.path.join(inputdir, 'organized')
@@ -53,6 +51,7 @@ def organizeDirs(inputdir):
     outfilecsv.writeheader()
 
     diskimgs = glob(os.path.join(inputdir, '*E01'))
+    print(diskimgs)
 
     for di in diskimgs:
         if not os.path.isfile(di.replace('E01', 'info')):
