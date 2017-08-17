@@ -26,14 +26,17 @@ def flagNames(inputdir, outfile):
         sys.exit('Output file already exists; will not overwrite.')
 
     # Write a test something to the file
-    outwrite = open(outfile, 'w')
+#    outwrite = open(outfile, 'w')
 
     # Report all files recursively under input
     allfiles = os.walk(inputdir)
-    outwrite.write('test it out!!!')
+    for root, subdirs, files in os.walk(inputdir):
+        for f in files:
+            thisfile = os.path.normpath(os.path.join(root, f))
+            
 
     # Close output
-    outwrite.close()
+#    outwrite.close()
 
 
 if __name__ == "__main__":
