@@ -18,6 +18,10 @@ def main():
     flagNames(idir, iout)
 
 def flagNames(inputdir, outfile):
+    toflag = ['<', '>', ':', '"', "'", '/', '\\', '|', '?', '*', '!']
+    # TODO: Leading or trailing spaces
+
+
     if not os.path.exists(inputdir):
         sys.exit('Quitting: Input directory does not exist')
 
@@ -27,13 +31,32 @@ def flagNames(inputdir, outfile):
 
     # Write a test something to the file
 #    outwrite = open(outfile, 'w')
+    print('\t'.join(['File Path', 'Character or Issue', 'In Directory Name']))
 
-    # Report all files recursively under input
+    # Report all files under input
     allfiles = os.walk(inputdir)
     for root, subdirs, files in os.walk(inputdir):
         for f in files:
-            thisfile = os.path.normpath(os.path.join(root, f))
-            
+            thisfile = os.path.normpath(os.path.join(root, f)) # Full path of file
+            fullpath = splitPath(thisfile)
+            indir = False
+            for i,fp in enumerate(fullpath):
+                if i > 1:
+                    indir = True
+                for f in fp:
+                    if f in toflag:
+                        print('\t'.join([thisfile, f, str(indir)]))
+
+
+def splitPath(path):
+    components = []
+    splitTuple = os.path.split(path)
+    while splitTuple != ('/', ''):
+        components.append(splitTuple[1])
+        splitTuple = os.path.split(splitTuple[0])
+    return components
+
+
 
     # Close output
 #    outwrite.close()
