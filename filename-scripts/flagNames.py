@@ -3,6 +3,7 @@
 import csv
 import os
 import sys
+import re
 import argparse
 
 def main():
@@ -19,8 +20,6 @@ def main():
 
 def flagNames(inputdir, outfile):
     toflag = ['<', '>', ':', '"', "'", '/', '\\', '|', '?', '*', '!']
-    # TODO: Leading or trailing spaces
-
 
     if not os.path.exists(inputdir):
         sys.exit('Quitting: Input directory does not exist')
@@ -30,8 +29,9 @@ def flagNames(inputdir, outfile):
         sys.exit('Output file already exists; will not overwrite.')
 
     # Write a test something to the file
-#    outwrite = open(outfile, 'w')
-    print('\t'.join(['File Path', 'Character or Issue', 'In Directory Name']))
+    outwrite = open(outfile, 'w')
+    outwrite.write('\t'.join(['File Path', 'Character or Issue', 'In Directory Name']))
+    outwrite.write('\n')
 
     # Report all files under input
     allfiles = os.walk(inputdir)
@@ -39,13 +39,17 @@ def flagNames(inputdir, outfile):
         for f in files:
             thisfile = os.path.normpath(os.path.join(root, f)) # Full path of file
             fullpath = splitPath(thisfile)
-            indir = False
-            for i,fp in enumerate(fullpath):
-                if i > 1:
-                    indir = True
+            for fp in fullpath:
                 for f in fp:
                     if f in toflag:
-                        print('\t'.join([thisfile, f, str(indir)]))
+                        outwrite.write('\t'.join([thisfile, f,]))
+                        outwrite.write('\n')
+                if re.search(r'^\s|\s$', fp):
+                    outwrite.write('\t'.join([thisfile, 'Leading or trailing space',]))
+                    outwrite.write('\n')
+
+    # Close output
+    outwrite.close()
 
 
 def splitPath(path):
@@ -55,11 +59,6 @@ def splitPath(path):
         components.append(splitTuple[1])
         splitTuple = os.path.split(splitTuple[0])
     return components
-
-
-
-    # Close output
-#    outwrite.close()
 
 
 if __name__ == "__main__":
