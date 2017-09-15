@@ -39,7 +39,7 @@ def flagNames(inputdir, outfile):
         for f in files:
             thisfile = os.path.normpath(os.path.join(root, f)) # Full path of file
             fullpath = splitPath(thisfile)
-            prob = [fullpath]
+            prob = [fullpath.decode('utf-8', 'surrogateescape')]
             for fp in fullpath:
                 for f in fp:
                     if f in toflag:
