@@ -47,6 +47,7 @@ def flagNames(inputdir, outfile):
                 if re.search(r'^\s|\s$', fp):
                     prob.append('Leading or trailing space')
                 output.write('\t'.join([prob])
+                output.write('\n')
 
     # Close output
     outwrite.close()
