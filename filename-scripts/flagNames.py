@@ -30,7 +30,7 @@ def flagNames(inputdir, outfile):
 
     # Write a test something to the file
     outwrite = open(outfile, 'w')
-    outwrite.write('\t'.join(['File Path', 'Character or Issue', 'In Directory Name']))
+    outwrite.write('\t'.join(['File Path', 'Character or Issue']))
     outwrite.write('\n')
 
     # Report all files under input
