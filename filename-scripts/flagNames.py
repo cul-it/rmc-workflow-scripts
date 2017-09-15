@@ -39,14 +39,14 @@ def flagNames(inputdir, outfile):
         for f in files:
             thisfile = os.path.normpath(os.path.join(root, f)) # Full path of file
             fullpath = splitPath(thisfile)
+            prob = [fullpath]
             for fp in fullpath:
                 for f in fp:
                     if f in toflag:
-                        outwrite.write('\t'.join([thisfile, f,]))
-                        outwrite.write('\n')
+                        prob.append(f)
                 if re.search(r'^\s|\s$', fp):
-                    outwrite.write('\t'.join([thisfile, 'Leading or trailing space',]))
-                    outwrite.write('\n')
+                    prob.append('Leading or trailing space')
+                output.write('\t'.join([prob])
 
     # Close output
     outwrite.close()
