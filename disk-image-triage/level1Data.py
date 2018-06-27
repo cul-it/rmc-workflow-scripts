@@ -18,46 +18,22 @@ from glob import glob
 # See http://www.forensicswiki.org/wiki/Bulk_extractor 
 
 
-def detect_beout(bedir):
-    # Reports back which files are non-zero
-    accts = {'alerts.txt': 0,
-             'ccn_track2.txt': 0,
-             'ccn.txt': 0,
-             'pii.txt': 0,
-             'telephone.txt': 0
-            }
-    for ats in accts.keys():
-        if os.stat(os.path.join(bedir, ats)).st_size > 0:
-            accts[ats] = 1
-
-    # Aggregate into level 1 and level 2 - #NOTE: This part not yet tested
-    if (accts['ccn.txt'] == 1) or (accts['ccn_track2.txt'] == 1) or (accts['pii.txt'] == 1):
-        accts['level_1'] = 1
-    else:
-        accts['level_1'] = 0
-
-    if (accts['alerts.txt'] == 1) or (accts['telephone.txt'] == 1):
-        accts['level_2'] = 1
-    else:
-        accts['level_2'] = 0
-
-    return accts
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory with "organized" subdirectory'+
                              ' that already contains RAW extracted disk images')
-#    parser.add_argument('outputfile', metavar='[output_file]',
-#                        help='output file for CSV data')
     args = parser.parse_args()
+    idir = args.inputdir
+    level1Data(idir)
 
+def level1Data(inputdir):
     # Does input dir exist?
-    if not os.path.exists(os.path.join(args.inputdir, 'organized')):
+    if not os.path.exists(os.path.join(inputdir, 'organized')):
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
-    outputfile = os.path.join(args.inputdir, 'organized', 'level1.csv')
+    outputfile = os.path.join(inputdir, 'organized', 'level1.csv')
 
     if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
@@ -71,7 +47,7 @@ def main():
 
 
     # Get list of dirs first
-    disk_img_dir = glob(os.path.join(args.inputdir, 'organized', '*',))
+    disk_img_dir = glob(os.path.join(inputdir, 'organized', '*',))
 
     # Remove csv from dir list
     disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
@@ -124,6 +100,33 @@ def main():
 
         # Return to start directory
         os.chdir(startdir)
+
+
+
+def detect_beout(bedir):
+    # Reports back which files are non-zero
+    accts = {'alerts.txt': 0,
+             'ccn_track2.txt': 0,
+             'ccn.txt': 0,
+             'pii.txt': 0,
+             'telephone.txt': 0
+            }
+    for ats in accts.keys():
+        if os.stat(os.path.join(bedir, ats)).st_size > 0:
+            accts[ats] = 1
+
+    # Aggregate into level 1 and level 2 - #NOTE: This part not yet tested
+    if (accts['ccn.txt'] == 1) or (accts['ccn_track2.txt'] == 1) or (accts['pii.txt'] == 1):
+        accts['level_1'] = 1
+    else:
+        accts['level_1'] = 0
+
+    if (accts['alerts.txt'] == 1) or (accts['telephone.txt'] == 1):
+        accts['level_2'] = 1
+    else:
+        accts['level_2'] = 0
+
+    return accts
 
 
 if __name__ == "__main__":

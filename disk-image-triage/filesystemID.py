@@ -20,6 +20,48 @@ from glob import glob
 
 fs_search = re.compile('(.*) file system')
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('inputdir', metavar='[input_dir]',
+                        help='input directory that contains "organized" subdirectory')
+    args = parser.parse_args()
+    idir = args.inputdir
+    filesystemID(idir)
+
+
+def filesystemID(inputdir):
+    # Does input dir exist?
+    if not os.path.exists(os.path.join(inputdir, 'organized')):
+        sys.exit('Quitting: Input directory does not exist.')
+
+    # Does output file exist?
+    outputfile = os.path.join(inputdir, 'organized' ,'filesystem.csv')
+
+    if os.path.isfile(outputfile):
+        sys.exit('Output file already exists; will not overwrite.')
+
+    # Set up output file
+    outfile = open(outputfile, 'w')
+    fieldnames = ['rmc_item_number', 'file_system_type'] 
+    outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
+    outfilecsv.writeheader()
+
+    # Start making things happen
+    scriptloc = os.getcwd()
+
+    # Get list of dirs
+    disk_img_dir = glob(os.path.join(os.path.abspath(inputdir), 'organized', '*',))
+
+    # Remove any csv files here
+    disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
+
+    # Run ewfexport for Exx files in dirs
+    # Run disktype within raw extraction function
+    # Write out as loop proceeds
+    for did in disk_img_dir:
+        dtres = extract_raw(did, scriptloc)
+        outfilecsv.writerow(dtres)
+
 
 def parse_disktype(disktype_res):
     filesystems = []
@@ -89,46 +131,6 @@ def extract_raw(dl, startdir):
     dtout = run_disktype(dl) # OH MAN I HOPE THIS ACTUALLY WORKS
     return dtout
 
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('inputdir', metavar='[input_dir]',
-                        help='input directory that contains "organized" subdirectory')
-#    parser.add_argument('outputfile', metavar='[output_file]',
-#                        help='output file for CSV data')
-    args = parser.parse_args()
-
-    # Does input dir exist?
-    if not os.path.exists(os.path.join(args.inputdir, 'organized')):
-        sys.exit('Quitting: Input directory does not exist.')
-
-    # Does output file exist?
-    outputfile = os.path.join(args.inputdir, 'organized' ,'filesystem.csv')
-
-    if os.path.isfile(outputfile):
-        sys.exit('Output file already exists; will not overwrite.')
-
-    # Set up output file
-    outfile = open(outputfile, 'w')
-    fieldnames = ['rmc_item_number', 'file_system_type'] 
-    outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
-    outfilecsv.writeheader()
-
-    # Start making things happen
-    scriptloc = os.getcwd()
-
-    # Get list of dirs
-    disk_img_dir = glob(os.path.join(os.path.abspath(args.inputdir), 'organized', '*',))
-
-    # Remove any csv files here
-    disk_img_dir = [did for did in disk_img_dir if not did.endswith('.csv')]
-
-    # Run ewfexport for Exx files in dirs
-    # Run disktype within raw extraction function
-    # Write out as loop proceeds
-    for did in disk_img_dir:
-        dtres = extract_raw(did, scriptloc)
-        outfilecsv.writerow(dtres)
 
 
 if __name__ == "__main__":

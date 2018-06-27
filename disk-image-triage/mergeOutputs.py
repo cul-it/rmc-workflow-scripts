@@ -21,15 +21,19 @@ def main():
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory that contains "organized" subdirectory')
     args = parser.parse_args()
+    idir = args.inputdir
+    mergeOutputs(idir)
 
+
+def mergeOutputs(inputdir):
     # Does input dir exist?
-    if not os.path.exists(os.path.join(args.inputdir, 'organized')):
+    if not os.path.exists(os.path.join(inputdir, 'organized')):
         sys.exit('Quitting: Input directory does not exist.')
 
 
     # Does output file exist?
-    inputbase = os.path.abspath(os.path.normpath(args.inputdir)).split(os.sep)[-1]
-    outputfile = os.path.join(args.inputdir, '{0}_stabilization_{1}.csv'.format(inputbase, uuid.uuid4()))
+    inputbase = os.path.abspath(os.path.normpath(inputdir)).split(os.sep)[-1]
+    outputfile = os.path.join(inputdir, '{0}_stabilization_{1}.csv'.format(inputbase, uuid.uuid4()))
 
     if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
@@ -43,7 +47,7 @@ def main():
     fieldlist = []
 
     for ic in input_csvs:
-        with open(os.path.join(args.inputdir, 'organized', ic)) as csvfile:
+        with open(os.path.join(inputdir, 'organized', ic)) as csvfile:
             reader = csv.DictReader(csvfile)
             for rk in reader.fieldnames:
                 if rk not in fieldlist:

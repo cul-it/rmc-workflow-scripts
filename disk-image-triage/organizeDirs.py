@@ -15,20 +15,20 @@ import csv
 from shutil import move
 from glob import glob
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory with E01/info files')
-#    parser.add_argument('outputdir', metavar='[output_dir]',
-#                        help='output directory (initially empty) for organized files')
     args = parser.parse_args()
+    idir = args.inputdir
+    organizeDirs(idir)
 
-    try:
-        os.path.exists(args.inputdir)
-    except:
+def organizeDirs(inputdir):
+    if not os.path.exists(inputdir):
         sys.exit('Quitting: Input directory does not exist.')
 
-    outputdir = os.path.join(args.inputdir, 'organized')
+    outputdir = os.path.join(inputdir, 'organized')
 
     try:
         dirtest = os.listdir(outputdir)
@@ -39,7 +39,7 @@ def main():
             sys.exit('Quitting: Output directory is not empty.')
 
     # Does output file exist?
-    outputfile = os.path.join(args.inputdir, 'organized', 'disk_img_size.csv')
+    outputfile = os.path.join(inputdir, 'organized', 'disk_img_size.csv')
 
     if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
@@ -50,7 +50,7 @@ def main():
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
     outfilecsv.writeheader()
 
-    diskimgs = glob(os.path.join(args.inputdir, '*E01'))
+    diskimgs = glob(os.path.join(inputdir, '*E01'))
 
     for di in diskimgs:
         if not os.path.isfile(di.replace('E01', 'info')):
@@ -66,7 +66,7 @@ def main():
         os.makedirs(newdir)
 
         # Get every E{01..n} file
-        all_di = glob(os.path.join(args.inputdir,'{0}.E*'.format(filebase)))
+        all_di = glob(os.path.join(inputdir,'{0}.E*'.format(filebase)))
         total_size = 0
         for adi in all_di:
             total_size = os.path.getsize(adi)+total_size
@@ -76,7 +76,7 @@ def main():
             except:
                 sys.stderr.write('File not moved: {0}\n'.format(adi))
 
-        oldinfofile = os.path.join(args.inputdir, '{0}.info'.format(filebase))
+        oldinfofile = os.path.join(inputdir, '{0}.info'.format(filebase))
         newinfofile = os.path.join(newdir, '{0}.info'.format(filebase))
         try:
             move(oldinfofile, newinfofile)
@@ -90,6 +90,7 @@ def main():
         outfilecsv.writerow(diskimg_stat)
 
     outfile.close()
+
 
 if __name__ == "__main__":
     main()

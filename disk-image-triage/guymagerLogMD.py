@@ -20,15 +20,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('inputdir', metavar='[input_dir]',
                         help='input directory that contains "organized" subdirectory')
-#    parser.add_argument('outputfile', metavar='[output_file]',
-#                        help='output file for CSV data')
     args = parser.parse_args()
+    idir = args.inputdir
+    guymagerLogMD(idir)
 
-    if not os.path.exists(os.path.join(args.inputdir, 'organized')):
+def guymagerLogMD(inputdir):
+    if not os.path.exists(os.path.join(inputdir, 'organized')):
         sys.exit('Quitting: Input directory does not exist.')
 
     # Does output file exist?
-    outputfile = os.path.join(args.inputdir, 'organized', 'image_info.csv')
+    outputfile = os.path.join(inputdir, 'organized', 'image_info.csv')
 
     if os.path.isfile(outputfile):
         sys.exit('Output file already exists; will not overwrite.')
@@ -41,7 +42,7 @@ def main():
     outfilecsv = csv.DictWriter(outfile, fieldnames=fieldnames)
     outfilecsv.writeheader()
 
-    files = glob(os.path.join(args.inputdir, 'organized', '*/*.info'))
+    files = glob(os.path.join(inputdir, 'organized', '*/*.info'))
 
     for filename in files:
         parsedline = {}
