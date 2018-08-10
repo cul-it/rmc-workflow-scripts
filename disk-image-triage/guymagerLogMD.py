@@ -13,6 +13,7 @@ import sys
 import re
 import argparse
 import csv
+import tokenize
 from glob import glob
 
 # set input variables for the source and destination file directories
@@ -46,8 +47,9 @@ def guymagerLogMD(inputdir):
 
     for filename in files:
         parsedline = {}
-        for line in open(filename, 'rU'): 
-
+        for line in open(filename, 'r', encoding='ascii', errors='ignore'):
+        # NOTE: Since this script is really for capturing statistics of transfer, I'm okay
+        #       with punting on Unicode errors; but we might need to come back to this later.
             if line.strip().startswith('Case number'):
                 parsedline['rmc_accession'] = line[26:].strip()
 
