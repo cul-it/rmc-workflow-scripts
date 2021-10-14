@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# Input:
-# Output:
-# Error:
+# Input: Input directory with E01/info files
+# Output: Logs as per helper scripts
+# Error: Script quits
 
 
 import sys
@@ -12,7 +12,7 @@ import re
 import csv
 from shutil import move
 from glob import glob
-from hurry.filesize import size
+from humanize import naturalsize
 
 from organizeDirs import organizeDirs
 from guymagerLogMD import guymagerLogMD
@@ -36,8 +36,8 @@ def main():
         for f in filenames:
             fp = os.path.join(dirpath, f)
             input_size += os.path.getsize(fp)
-    print("The size of the input directory is: {0}".format(size(input_size)))
-    print("To continue, you need {0} of free space.".format(size(input_size*4)))
+    print("The size of the input directory is: {0}".format(naturalsize(input_size)))
+    print("To continue, you need {0} of free space.".format(naturalsize(input_size*4)))
     proceed = str(input("Do you want to continue? y/N "))
     if not proceed.startswith('y'):
         sys.exit("Quitting.")

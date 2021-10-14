@@ -1,8 +1,5 @@
 #!/bin/bash
-# Setup for disk-image-triage
 
-# Check/install dependencies
-# ewftools # TODO
-# bulk_extractor # TODO
-sudo pip3 install hurry.filesize
+# Python dependencies (install as user)
+pip3 install --user humanize
 
